@@ -2,6 +2,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl)
 from odoo import _, api, models
 from odoo.tools import float_compare
+from odoo.exceptions import UserError
 
 
 class SaleOrder(models.Model):
@@ -51,3 +52,8 @@ class SaleOrder(models.Model):
 
     def action_approve(self):
         self.write({"state": "draft"})
+
+    def action_confirm(self):
+        if self.state == 'to_approve' and self.is_to_approve():
+            raise UserError(_('This sale order is not approved'))
+        return super().action_confirm()
